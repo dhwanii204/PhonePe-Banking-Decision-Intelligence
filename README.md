@@ -159,3 +159,54 @@ The selected training threshold was 0.15, with a training cost of ₹12,150. App
 For comparison, the test cost at the standard threshold of 0.5 was ₹11,800, while flagging nobody would have resulted in a cost of ₹20,400 because all 51 actual defaults would be missed.
 
 The threshold of 0.15 was selected using training data only. Its test cost is reported as an evaluation result, not used to choose the threshold. Under the specified cost assumptions, this threshold is preferable to 0.5 for the evaluated test set. These synthetic results should not be treated as a real lending policy or credit decision rule.
+
+
+## Part 3 findings
+
+### 1. K-means customer segmentation
+
+K-means clustering was implemented from scratch using the five standardised predictors: account age, failed transaction count, credit utilisation, average monthly inflow, and repayment score.
+
+The algorithm was evaluated for K values from 2 to 6. The WCSS decreased from 2,262.6753 at K=2 to 1,278.1691 at K=6. The specified elbow rule selected K=3, which was also used for the final customer segmentation.
+
+The resulting segments contain 322 customers in Segment A, 255 in Segment B, and 223 in Segment C.
+
+Segment A has the lowest average credit utilisation (0.2250), the highest average repayment score (62.1584), and the lowest observed default rate (1.86%). This segment shows comparatively favourable repayment characteristics in the synthetic dataset.
+
+Segment B has the highest average monthly inflow (28.7192 thousand INR) and the highest average monthly spending (17.1248 thousand INR). Its observed default rate is 23.53%.
+
+Segment C has the highest average credit utilisation (0.7118), the lowest average repayment score (38.5215), and the highest observed default rate (46.64%). This segment shows comparatively higher default incidence in the synthetic dataset.
+
+These profiles can help a bank understand differences between customer groups and design further analysis or targeted financial support. Cluster membership alone should not be used to approve or reject individual customers.
+
+### 2. Hierarchical clustering
+
+Agglomerative hierarchical clustering was implemented using single, complete, and average linkage on the supplied six-cohort dissimilarity matrix.
+
+All three methods initially merge E3 and E6. They subsequently add E2 to that group and combine E4 with E5, followed by E1.
+
+The largest consecutive merge-height gap was 1.4000 for single linkage, 5.0000 for complete linkage, and 2.7556 for average linkage.
+
+Using the specified largest-gap cutting rule, single linkage produces four clusters, whereas complete and average linkage each produce two clusters.
+
+The difference occurs because single linkage uses the minimum pairwise distance, complete linkage uses the maximum pairwise distance, and average linkage uses the mean pairwise distance between clusters.
+
+The results demonstrate how the choice of linkage method can influence the final grouping, even when all methods use the same dissimilarity matrix.
+
+### 3. Principal component analysis
+
+Principal component analysis was performed on the five standardised predictors using the covariance matrix and eigenvalue decomposition.
+
+The sum of the eigenvalues is 5.0000, matching the number of standardised predictors.
+
+The first principal component explains 52.27% of the total variance, while the second explains 23.66%. Together, they explain 75.93% of the variance.
+
+The first three principal components explain 86.16% of the total variance. Therefore, three components are required to retain at least 80% of the variation.
+
+For PC1, account age has a loading of 0.5317 and repayment score has a loading of 0.4418. Credit utilisation has a loading of -0.5187, failed transaction count has a loading of -0.4100, and average monthly inflow has a loading of -0.2916.
+
+This component represents a contrast between account age and repayment score on one side and credit utilisation and failed transactions on the other. These loadings describe statistical relationships and should not be interpreted as causal effects.
+
+The mean PC1 scores are 1.7773 for Segment A, -0.7831 for Segment B, and -1.6709 for Segment C. These results provide another view of the differences between the customer segments identified through K-means.
+
+PCA reduces the dimensionality of the predictor data, but the components may be less directly interpretable than the original banking variables.
