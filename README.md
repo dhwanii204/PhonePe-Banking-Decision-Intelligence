@@ -21,6 +21,8 @@ Run the analysis scripts from the project root directory:
 ```bash
 python part1.py
 python part2.py
+python part3.py
+python part4.py
 ```
 
 The scripts calculate results and regenerate the corresponding output files inside the `outputs/` directory.
@@ -210,3 +212,78 @@ This component represents a contrast between account age and repayment score on 
 The mean PC1 scores are 1.7773 for Segment A, -0.7831 for Segment B, and -1.6709 for Segment C. These results provide another view of the differences between the customer segments identified through K-means.
 
 PCA reduces the dimensionality of the predictor data, but the components may be less directly interpretable than the original banking variables.
+
+## Part 4 findings
+
+### 1. Decision-tree split criteria
+
+The root node has an entropy of 0.7462 and a Gini impurity of 0.3347. Split S4 (X1 ≤ 24) is the best split because it produces the highest information gain of 0.1252 and the highest Gini gain of 0.0606 among the four candidates. Growing a tree until every leaf is pure can cause overfitting because it may learn noise and individual patterns instead of general relationships; setting a maximum tree depth or minimum leaf size can help prevent this.
+
+The expected out-of-bag fraction for 560 bootstrap draws is 0.3676. The stump's estimated default probabilities are 0.4574 for the YES group and 0.0887 for the NO group.
+
+### 2. Ensemble voting
+
+Among the five evaluated models, logistic regression is the strongest choice based on F1-score. At the specified 0.3 threshold, it achieves an F1-score of 0.5714 and recall of 0.7451.
+
+Under the common 0.3 probability threshold used in this comparison, the decision stump achieves an F1-score of 0.5532 and recall of 0.7647, while KNN achieves an F1-score of 0.4806 and recall of 0.6078. Hard voting produces an F1-score of 0.5481, and soft voting produces 0.5507. Neither voting method improves on logistic regression's F1-score, so combining these models does not provide a performance advantage in this experiment.
+
+### 3. AdaBoost
+
+The first weak learner has a weighted error of 0.2500 and an alpha of 0.5493. After its weight update and normalisation, the two misclassified points (points 3 and 7) each receive a weight of 0.2500, giving a combined weight of 0.5000.
+
+The second weak learner has a lower weighted error of 0.1667 and a higher alpha of 0.8047. Therefore, AdaBoost gives h2 more influence than h1 because h2 performs better on the updated, more challenging observations. The final ensemble accuracy is 0.7500.
+
+### 4. Neural network architecture sizing
+
+#### Model A: CNN for cheque-digit recognition
+
+The CNN option for recognising handwritten digits has the following output shapes and parameter counts:
+
+| Layer | Output shape | Parameters |
+|---|---:|---:|
+| Input | 28 × 28 × 1 | 0 |
+| Conv1 (5 × 5, 6 filters) | 28 × 28 × 6 | 156 |
+| ReLU | 28 × 28 × 6 | 0 |
+| MaxPool1 (2 × 2) | 14 × 14 × 6 | 0 |
+| Conv2 (5 × 5, 16 filters) | 10 × 10 × 16 | 2,416 |
+| ReLU | 10 × 10 × 16 | 0 |
+| MaxPool2 (2 × 2) | 5 × 5 × 16 | 0 |
+| Flatten | 400 | 0 |
+| Dense1 (32 neurons) | 32 | 12,832 |
+| Output (10 neurons) | 10 | 330 |
+
+The CNN has 15,734 trainable parameters in total. The alternative fully connected MLP has 13,002 parameters.
+
+For comparison, a fully connected layer mapping a 128 × 128 × 3 input to 1,024 neurons requires 50,332,672 parameters, whereas a convolutional layer with 64 filters of size 3 × 3 requires only 1,792 parameters. Convolution uses shared filter weights, which greatly reduces the number of parameters.
+
+For a 10-class classification task, ReLU is a suitable hidden-layer activation, while softmax at the output with categorical cross-entropy is a suitable combination for class probabilities.
+
+#### Model B: RNN for payment-remark classification
+
+For the RNN, the input-to-hidden weight matrix W_xh has shape 128 × 64, the hidden-to-hidden matrix W_hh has shape 128 × 128, and the hidden-to-output matrix W_hy has shape 16 × 128.
+
+Including the biases, the RNN contains 26,768 parameters. The same weights are reused at every time step, so increasing the sequence length increases computation but does not increase the number of trainable parameters.
+
+A very deep plain network can suffer from vanishing gradients, where gradients become progressively smaller as they pass backwards through many layers, preventing early layers from learning effectively. Skip connections provide shorter paths for information and gradients to travel, helping preserve gradient flow during training.
+
+## Model-choice memo
+
+**To:** Head of the Lending Risk Team
+**Subject:** Structured-data model recommendation
+
+I recommend logistic regression as the structured-data model to take forward for controlled production validation. At the 0.3 threshold, it achieves an F1-score of 0.5714 and recall of 0.7451, outperforming hard voting (F1 0.5481) and soft voting (F1 0.5507). Its recall is also higher than KNN's 0.6078.
+
+For the cost-based operating threshold, I recommend 0.15, selected using training data. On the test set, logistic regression at this threshold incurs a cost of INR 6,050, compared with INR 11,800 at the standard 0.5 threshold and INR 20,400 when no borrowers are flagged. These costs use INR 50 per false positive and INR 400 per false negative.
+
+The evidence has limitations: it comes from 800 synthetic records and one stratified train-test split, so it does not establish real-world lending performance. The threshold and model should be validated on representative, real-world data before deployment.
+
+Model B, the payment-remark classification RNN, is worth a limited pilot before production because payment remarks may provide additional lending-risk context; its incremental value must be tested rather than assumed.
+
+## Limitations
+
+- **Synthetic data:** All 800 records are generated artificially and do not represent actual PhonePe or partner-lender customers. The results cannot establish real-world model performance.
+- **Single train-test split:** Classification results use one stratified 70:30 split. Performance may vary with a different sample or split.
+- **Limited positive test records:** The test set contains only 51 defaults, so a small number of changed predictions can noticeably affect precision, recall and F1-score.
+- **Simplified cost assumptions:** The cost analysis uses fixed costs of INR 50 per false positive and INR 400 per false negative. Actual collection and recovery costs may differ.
+- **No deployment validation:** The models have not been tested for fairness, data drift, operational reliability, or performance on new borrowers.
+- **Architecture sizing only:** The MLP, CNN and RNN architectures were sized mathematically but were not trained or evaluated on actual cheque images or payment remarks.
