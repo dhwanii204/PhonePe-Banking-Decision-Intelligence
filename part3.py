@@ -674,6 +674,7 @@ for segment in segment_names:
 print("\nTask 3.3 PCA calculations completed.")
 
 
+
 # --------------------------------------------------
 # FINAL: GENERATE PART 3 RESULTS FILE
 # --------------------------------------------------
@@ -686,7 +687,6 @@ results_lines = []
 
 results_lines.append("PART 3: CLUSTERING AND PCA")
 results_lines.append("")
-
 results_lines.append("TASK 3.1: K-MEANS")
 
 results_lines.append(f"total_records={n}")
@@ -696,7 +696,7 @@ results_lines.append(f"elbow_k={elbow_k}")
 for k in range(2, 7):
 
     results_lines.append(
-        f"k{k}_wcss={kmeans_results[k]['wcss']:.4f}"
+        f"wcss_k{k}={kmeans_results[k]['wcss']:.4f}"
     )
 
     results_lines.append(
@@ -707,7 +707,9 @@ for row in segment_rows:
 
     segment = row[0]
 
-    results_lines.append(f"segment_{segment}_size={row[1]}")
+    results_lines.append(
+        f"size_segment_{segment}={row[1]}"
+    )
 
     for i in range(5):
 
@@ -786,47 +788,51 @@ results_lines.append("")
 results_lines.append("TASK 3.3: PRINCIPAL COMPONENT ANALYSIS")
 
 results_lines.append(
-    f"total_eigenvalue_sum={total_eigenvalue:.4f}"
+    f"eigenvalue_sum={total_eigenvalue:.4f}"
 )
 
 for i in range(len(eigenvalues)):
 
+    component_number = i + 1
+
     results_lines.append(
-        f"eigenvalue_PC{i + 1}={eigenvalues[i]:.4f}"
+        f"eigenvalue_{component_number}={eigenvalues[i]:.4f}"
     )
 
     results_lines.append(
-        f"explained_variance_PC{i + 1}="
+        f"explained_ratio_{component_number}="
         f"{explained_variance_ratio[i]:.4f}"
     )
 
     results_lines.append(
-        f"cumulative_variance_PC{i + 1}="
+        f"cumulative_ratio_{component_number}="
         f"{cumulative_variance_ratio[i]:.4f}"
     )
 
 results_lines.append(
-    f"components_for_80_percent={components_for_80}"
+    f"components_for_80pct={components_for_80}"
 )
 
 for i, name in enumerate(predictor_names):
 
     results_lines.append(
-        f"{name}_PC1_loading={eigenvectors[i, 0]:.4f}"
+        f"pc1_loading_{name}={eigenvectors[i, 0]:.4f}"
     )
 
     results_lines.append(
-        f"{name}_PC2_loading={eigenvectors[i, 1]:.4f}"
+        f"pc2_loading_{name}={eigenvectors[i, 1]:.4f}"
     )
 
 for i in range(3):
 
+    row_number = i + 1
+
     results_lines.append(
-        f"record_{i + 1}_PC1={pca_scores[i, 0]:.4f}"
+        f"row{row_number}_pc1={pca_scores[i, 0]:.4f}"
     )
 
     results_lines.append(
-        f"record_{i + 1}_PC2={pca_scores[i, 1]:.4f}"
+        f"row{row_number}_pc2={pca_scores[i, 1]:.4f}"
     )
 
 for segment in segment_names:
@@ -837,7 +843,7 @@ for segment in segment_names:
     ]
 
     results_lines.append(
-        f"segment_{segment}_mean_PC1="
+        f"mean_pc1_segment_{segment}="
         f"{np.mean(segment_scores):.4f}"
     )
 

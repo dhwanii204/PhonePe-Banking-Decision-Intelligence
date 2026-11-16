@@ -662,23 +662,24 @@ logistic_metrics_03 = calculate_metrics(
     y_test, logistic_test_probabilities, 0.3
 )
 
-# Collect results in the required key-value format
+
+# Collect results using the exact key names from the project brief
 results = {
     # Task 2.1: Dataset split
     "total_records": n,
-    "train_records": len(y_train),
-    "test_records": len(y_test),
-    "train_defaults": int(np.sum(y_train)),
-    "test_defaults": int(np.sum(y_test)),
+    "train_rows": len(y_train),
+    "train_positives": int(np.sum(y_train)),
+    "test_rows": len(y_test),
+    "test_positives": int(np.sum(y_test)),
 
     # Task 2.2: Logistic regression
-    "logistic_loss_epoch_0": loss_history[0],
-    "logistic_loss_epoch_1": loss_history[1],
-    "logistic_loss_epoch_10": loss_history[10],
-    "logistic_loss_epoch_100": loss_history[100],
-    "logistic_loss_epoch_1000": loss_history[1000],
-    "logistic_test_bce": test_bce,
-    "logistic_bias": bias,
+    "loss_epoch_0": loss_history[0],
+    "loss_epoch_1": loss_history[1],
+    "loss_epoch_10": loss_history[10],
+    "loss_epoch_100": loss_history[100],
+    "loss_epoch_1000": loss_history[1000],
+    "test_bce": test_bce,
+    "bias": bias,
 
     # Logistic regression weights
     "weight_X1": weights[0],
@@ -689,24 +690,10 @@ results = {
     "weight_X6": weights[5],
     "weight_X7": weights[6],
 
-    # Task 2.3: Learning-rate comparison
-    "lr_001_loss_epoch_0": learning_rate_results[0][1][0],
-    "lr_001_loss_epoch_1": learning_rate_results[0][1][1],
-    "lr_001_loss_epoch_10": learning_rate_results[0][1][10],
-    "lr_001_loss_epoch_100": learning_rate_results[0][1][100],
-    "lr_001_loss_epoch_200": learning_rate_results[0][1][200],
-
-    "lr_01_loss_epoch_0": learning_rate_results[1][1][0],
-    "lr_01_loss_epoch_1": learning_rate_results[1][1][1],
-    "lr_01_loss_epoch_10": learning_rate_results[1][1][10],
-    "lr_01_loss_epoch_100": learning_rate_results[1][1][100],
-    "lr_01_loss_epoch_200": learning_rate_results[1][1][200],
-
-    "lr_1_loss_epoch_0": learning_rate_results[2][1][0],
-    "lr_1_loss_epoch_1": learning_rate_results[2][1][1],
-    "lr_1_loss_epoch_10": learning_rate_results[2][1][10],
-    "lr_1_loss_epoch_100": learning_rate_results[2][1][100],
-    "lr_1_loss_epoch_200": learning_rate_results[2][1][200],
+    # Task 2.3: Learning-rate comparison (200 updates)
+    "loss_epoch_200_eta_0.01": learning_rate_results[0][1][200],
+    "loss_epoch_200_eta_0.1": learning_rate_results[1][1][200],
+    "loss_epoch_200_eta_1.0": learning_rate_results[2][1][200],
 
     # Task 2.4: Odds ratios
     "odds_ratio_X1": odds_ratios[0],
@@ -718,47 +705,47 @@ results = {
     "odds_ratio_X7": odds_ratios[6],
 
     # Task 2.5: Logistic metrics at threshold 0.5
-    "logistic_05_tp": logistic_metrics_05["tp"],
-    "logistic_05_fp": logistic_metrics_05["fp"],
-    "logistic_05_tn": logistic_metrics_05["tn"],
-    "logistic_05_fn": logistic_metrics_05["fn"],
-    "logistic_05_accuracy": logistic_metrics_05["accuracy"],
-    "logistic_05_precision": logistic_metrics_05["precision"],
-    "logistic_05_recall": logistic_metrics_05["recall"],
-    "logistic_05_f1": logistic_metrics_05["f1"],
-    "logistic_05_specificity": logistic_metrics_05["specificity"],
+    "tau_0.5_tp": logistic_metrics_05["tp"],
+    "tau_0.5_fp": logistic_metrics_05["fp"],
+    "tau_0.5_tn": logistic_metrics_05["tn"],
+    "tau_0.5_fn": logistic_metrics_05["fn"],
+    "tau_0.5_accuracy": logistic_metrics_05["accuracy"],
+    "tau_0.5_precision": logistic_metrics_05["precision"],
+    "tau_0.5_recall": logistic_metrics_05["recall"],
+    "tau_0.5_f1": logistic_metrics_05["f1"],
+    "tau_0.5_specificity": logistic_metrics_05["specificity"],
 
     # Task 2.5: Logistic metrics at threshold 0.3
-    "logistic_03_tp": logistic_metrics_03["tp"],
-    "logistic_03_fp": logistic_metrics_03["fp"],
-    "logistic_03_tn": logistic_metrics_03["tn"],
-    "logistic_03_fn": logistic_metrics_03["fn"],
-    "logistic_03_accuracy": logistic_metrics_03["accuracy"],
-    "logistic_03_precision": logistic_metrics_03["precision"],
-    "logistic_03_recall": logistic_metrics_03["recall"],
-    "logistic_03_f1": logistic_metrics_03["f1"],
-    "logistic_03_specificity": logistic_metrics_03["specificity"],
+    "tau_0.3_tp": logistic_metrics_03["tp"],
+    "tau_0.3_fp": logistic_metrics_03["fp"],
+    "tau_0.3_tn": logistic_metrics_03["tn"],
+    "tau_0.3_fn": logistic_metrics_03["fn"],
+    "tau_0.3_accuracy": logistic_metrics_03["accuracy"],
+    "tau_0.3_precision": logistic_metrics_03["precision"],
+    "tau_0.3_recall": logistic_metrics_03["recall"],
+    "tau_0.3_f1": logistic_metrics_03["f1"],
+    "tau_0.3_specificity": logistic_metrics_03["specificity"],
 
     "blind_accuracy": blind_accuracy,
 
     # Task 2.7: KNN
     "knn_best_k": best_k,
     "knn_best_cv_f1": best_knn_row["mean_cv_f1"],
-    "knn_test_tp": knn_test_metrics["tp"],
-    "knn_test_fp": knn_test_metrics["fp"],
-    "knn_test_tn": knn_test_metrics["tn"],
-    "knn_test_fn": knn_test_metrics["fn"],
-    "knn_test_accuracy": knn_test_metrics["accuracy"],
-    "knn_test_precision": knn_test_metrics["precision"],
-    "knn_test_recall": knn_test_metrics["recall"],
-    "knn_test_f1": knn_test_metrics["f1"],
-    "knn_test_specificity": knn_test_metrics["specificity"],
+    "knn_tp": knn_test_metrics["tp"],
+    "knn_fp": knn_test_metrics["fp"],
+    "knn_tn": knn_test_metrics["tn"],
+    "knn_fn": knn_test_metrics["fn"],
+    "knn_accuracy": knn_test_metrics["accuracy"],
+    "knn_precision": knn_test_metrics["precision"],
+    "knn_recall": knn_test_metrics["recall"],
+    "knn_f1": knn_test_metrics["f1"],
+    "knn_specificity": knn_test_metrics["specificity"],
 
     # Task 2.8: INR cost comparison
     "cost_tau": cost_tau,
-    "cost_train": cost_train_at_tau,
-    "cost_test": cost_test_at_tau,
-    "cost_test_tau_05": cost_test_at_05,
+    "cost_train_at_tau": cost_train_at_tau,
+    "cost_test_at_tau": cost_test_at_tau,
+    "cost_test_at_0.5": cost_test_at_05,
     "cost_test_flag_nobody": cost_test_flag_nobody
 }
 

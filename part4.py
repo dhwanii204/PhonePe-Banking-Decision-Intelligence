@@ -486,9 +486,7 @@ logistic_predictions = (
     logistic_test_probabilities >= threshold
 ).astype(int)
 
-knn_predictions = (
-    knn_test_probabilities >= threshold
-).astype(int)
+knn_predictions = knn_test_predictions_05.copy()
 
 stump_predictions = (
     stump_test_probabilities >= threshold

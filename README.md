@@ -1,4 +1,4 @@
-Domain: Banking
+﻿Domain: Banking
 
 ## How to run
 
@@ -31,25 +31,25 @@ The scripts calculate results and regenerate the corresponding output files insi
 
 ### 1. Descriptive statistics and confidence interval
 
-The analysis uses all 800 synthetic banking records. Mean monthly customer spending is 8.9382 thousand INR (₹8,938.20).
+The analysis uses all 800 synthetic banking records. Mean monthly customer spending is 8.9382 thousand INR (INR 8,938.20).
 
-The sample standard deviation is 9.1723 thousand INR (₹9,172.30), and the standard error is 0.3243 thousand INR (₹324.30). The 95% confidence interval for the population mean is approximately ₹8,302.60 to ₹9,573.80.
+The sample standard deviation is 9.1723 thousand INR (INR 9,172.30), and the standard error is 0.3243 thousand INR (INR 324.30). The 95% confidence interval for the population mean is approximately INR 8,302.60 to INR 9,573.80.
 
 This interval provides a plausible range for the population's average monthly spending under the assumptions of the confidence interval calculation.
 
 ### 2. Hypothesis testing
 
-The null hypothesis states that average monthly spending is ₹8,000, while the alternative hypothesis states that it differs from ₹8,000.
+The null hypothesis states that average monthly spending is INR 8,000, while the alternative hypothesis states that it differs from INR 8,000.
 
 The calculated z-statistic is 2.8930, which exceeds the two-tailed critical value of 1.96 at the 5% significance level. Therefore, the null hypothesis is rejected.
 
-A Type I error in this banking context would mean concluding that average monthly spending differs from ₹8,000 when the true population mean is actually ₹8,000.
+A Type I error in this banking context would mean concluding that average monthly spending differs from INR 8,000 when the true population mean is actually INR 8,000.
 
-The observed difference is ₹938.20. Although statistically significant, the bank should also consider whether this difference is practically meaningful for its customer analysis and business decisions.
+The observed difference is INR 938.20. Although statistically significant, the bank should also consider whether this difference is practically meaningful for its customer analysis and business decisions.
 
 ### 3. Required sample size
 
-The estimated minimum sample size required to achieve a margin of error of ₹500 at 95% confidence is 1,293 records.
+The estimated minimum sample size required to achieve a margin of error of INR 500 at 95% confidence is 1,293 records.
 
 The available dataset contains 800 records, which is 493 fewer than the estimated requirement. Therefore, a larger sample would be needed to meet the specified precision target.
 
@@ -57,7 +57,7 @@ The available dataset contains 800 records, which is 493 fewer than the estimate
 
 A simple linear regression was used to examine the relationship between average monthly inflow and monthly spending.
 
-The estimated slope is 0.6701. This indicates that an additional ₹1,000 in monthly inflow is associated with an estimated increase of approximately ₹670.10 in monthly spending.
+The estimated slope is 0.6701. This indicates that an additional INR 1,000 in monthly inflow is associated with an estimated increase of approximately INR 670.10 in monthly spending.
 
 The model has an R-squared value of 0.5196, meaning that approximately 51.96% of the variation in monthly spending is explained by monthly inflow in this linear model.
 
@@ -154,64 +154,68 @@ On the test set, KNN achieved an F1-score of 0.3696 and recall of 0.3333. This i
 
 ### 8. Cost-sensitive threshold selection
 
-The cost-sensitive analysis assigns ₹50 to each false positive and ₹400 to each false negative. Thresholds from 0.05 to 0.95 were evaluated using training-set logistic probabilities.
+The cost-sensitive analysis assigns INR 50 to each false positive and INR 400 to each false negative. Thresholds from 0.05 to 0.95 were evaluated using training-set logistic probabilities.
 
-The selected training threshold was 0.15, with a training cost of ₹12,150. Applying this threshold to the test set resulted in a cost of ₹6,050.
+The selected training threshold was 0.15, with a training cost of INR 12,150. Applying this threshold to the test set resulted in a cost of INR 6,050.
 
-For comparison, the test cost at the standard threshold of 0.5 was ₹11,800, while flagging nobody would have resulted in a cost of ₹20,400 because all 51 actual defaults would be missed.
+For comparison, the test cost at the standard threshold of 0.5 was INR 11,800, while flagging nobody would have resulted in a cost of INR 20,400 because all 51 actual defaults would be missed.
 
 The threshold of 0.15 was selected using training data only. Its test cost is reported as an evaluation result, not used to choose the threshold. Under the specified cost assumptions, this threshold is preferable to 0.5 for the evaluated test set. These synthetic results should not be treated as a real lending policy or credit decision rule.
+
 
 
 ## Part 3 findings
 
 ### 1. K-means customer segmentation
 
-K-means clustering was implemented from scratch using the five standardised predictors: account age, failed transaction count, credit utilisation, average monthly inflow, and repayment score.
+K-means clustering was implemented from scratch using five standardised predictors: account age, failed transaction count, credit utilisation, average monthly inflow, and repayment score.
 
-The algorithm was evaluated for K values from 2 to 6. The WCSS decreased from 2,262.6753 at K=2 to 1,278.1691 at K=6. The specified elbow rule selected K=3, which was also used for the final customer segmentation.
+The algorithm was evaluated for K values from 2 to 6. The successive WCSS reductions were:
+
+- K=2 to K=3: 659.8282
+- K=3 to K=4: 108.0739
+- K=4 to K=5: 171.0575
+- K=5 to K=6: 45.5466
+
+The specified elbow rule selected K=3. The first reduction is substantially larger than the next one, indicating that moving from two to three clusters provides a major improvement. The later reductions are not perfectly decreasing, so the elbow is not unambiguous. The pinned starting rows make the result reproducible, but do not guarantee a global optimum.
 
 The resulting segments contain 322 customers in Segment A, 255 in Segment B, and 223 in Segment C.
 
-Segment A has the lowest average credit utilisation (0.2250), the highest average repayment score (62.1584), and the lowest observed default rate (1.86%). This segment shows comparatively favourable repayment characteristics in the synthetic dataset.
+- **Segment A - Established, lower-risk customers:** This segment has the highest average account age (47.5028), the lowest average credit utilisation (0.2250), the highest average repayment score (62.1584), and the lowest observed default rate (0.0186 or 1.86%). A suitable action is to maintain a positive repayment relationship and consider routine eligibility reviews rather than automatically increasing credit limits.
+- **Segment B - High-inflow, high-spending customers:** This segment has the highest average monthly inflow (28.7192 thousand INR) and monthly spending (17.1248 thousand INR). Its observed default rate is 0.2353 or 23.53%. A suitable action is to review affordability and repayment behaviour before offering additional borrowing.
+- **Segment C - Higher-utilisation, elevated-risk customers:** This segment has the highest average credit utilisation (0.7118), the lowest average repayment score (38.5215), and the highest observed default rate (0.4664 or 46.64%). A suitable action is to offer repayment reminders, financial guidance, and support to reduce outstanding utilisation.
 
-Segment B has the highest average monthly inflow (28.7192 thousand INR) and the highest average monthly spending (17.1248 thousand INR). Its observed default rate is 23.53%.
-
-Segment C has the highest average credit utilisation (0.7118), the lowest average repayment score (38.5215), and the highest observed default rate (46.64%). This segment shows comparatively higher default incidence in the synthetic dataset.
-
-These profiles can help a bank understand differences between customer groups and design further analysis or targeted financial support. Cluster membership alone should not be used to approve or reject individual customers.
+Segment C has the highest observed outcome rate at 0.4664 (46.64%). These are descriptive profiles from synthetic data, not verified risk categories. Cluster membership alone should not be used to approve or reject individual customers.
 
 ### 2. Hierarchical clustering
 
 Agglomerative hierarchical clustering was implemented using single, complete, and average linkage on the supplied six-cohort dissimilarity matrix.
 
-All three methods initially merge E3 and E6. They subsequently add E2 to that group and combine E4 with E5, followed by E1.
+The largest consecutive merge-height gaps were 1.4000 for single linkage, 5.0000 for complete linkage, and 2.7556 for average linkage. Applying the specified largest-gap cutting rule gives:
 
-The largest consecutive merge-height gap was 1.4000 for single linkage, 5.0000 for complete linkage, and 2.7556 for average linkage.
+- **Single linkage - four clusters:** {E1}, {E2, E3, E6}, {E4}, and {E5}.
+- **Complete linkage - two clusters:** {E1, E4, E5} and {E2, E3, E6}.
 
-Using the specified largest-gap cutting rule, single linkage produces four clusters, whereas complete and average linkage each produce two clusters.
+The methods disagree because single linkage uses the minimum pairwise distance between clusters. This can cause chaining, where a sequence of nearby points joins clusters even if the resulting group is spread out. Complete linkage uses the maximum pairwise distance, so it delays merging clusters when their farthest members are still relatively far apart.
 
-The difference occurs because single linkage uses the minimum pairwise distance, complete linkage uses the maximum pairwise distance, and average linkage uses the mean pairwise distance between clusters.
-
-The results demonstrate how the choice of linkage method can influence the final grouping, even when all methods use the same dissimilarity matrix.
+Average linkage uses the mean pairwise distance and produces two clusters under the specified largest-gap rule in this example.
 
 ### 3. Principal component analysis
 
-Principal component analysis was performed on the five standardised predictors using the covariance matrix and eigenvalue decomposition.
+Principal component analysis was performed on the five standardised predictors using the covariance matrix and eigenvalue decomposition. Standardisation gives each predictor a mean of approximately zero and a variance of approximately one; therefore, the standardised mean vector is approximately (0, 0, 0, 0, 0).
 
 The sum of the eigenvalues is 5.0000, matching the number of standardised predictors.
 
-The first principal component explains 52.27% of the total variance, while the second explains 23.66%. Together, they explain 75.93% of the variance.
+The first principal component explains 52.27% of the total variance, while the second explains 23.66%. Together, they explain 75.93%. The first three components explain 86.16%, so three components are required to retain at least 80% of the total variance.
 
-The first three principal components explain 86.16% of the total variance. Therefore, three components are required to retain at least 80% of the variation.
+For PC1, account age has a positive loading of 0.5317 and repayment score has a positive loading of 0.4418. Credit utilisation has a negative loading of -0.5187, failed transaction count has a negative loading of -0.4100, and average monthly inflow has a negative loading of -0.2916.
 
-For PC1, account age has a loading of 0.5317 and repayment score has a loading of 0.4418. Credit utilisation has a loading of -0.5187, failed transaction count has a loading of -0.4100, and average monthly inflow has a loading of -0.2916.
+PC1 therefore contrasts account age and repayment score with credit utilisation, failed transactions, and average monthly inflow. The loading signs and magnitudes describe the direction and relative contribution of the standardised predictors to this component; they do not establish causal relationships.
 
-This component represents a contrast between account age and repayment score on one side and credit utilisation and failed transactions on the other. These loadings describe statistical relationships and should not be interpreted as causal effects.
+The mean PC1 scores are 1.7773 for Segment A, -0.7831 for Segment B, and -1.6709 for Segment C. Segment A lies on the positive side of PC1, while Segments B and C lie on the negative side, with Segment C having the lowest mean score. This provides another view of the differences between the K-means segments.
 
-The mean PC1 scores are 1.7773 for Segment A, -0.7831 for Segment B, and -1.6709 for Segment C. These results provide another view of the differences between the customer segments identified through K-means.
+PCA reduces dimensionality, but its components may be less directly interpretable than the original banking variables.
 
-PCA reduces the dimensionality of the predictor data, but the components may be less directly interpretable than the original banking variables.
 
 ## Part 4 findings
 
@@ -223,9 +227,15 @@ The expected out-of-bag fraction for 560 bootstrap draws is 0.3676. The stump's 
 
 ### 2. Ensemble voting
 
-Among the five evaluated models, logistic regression is the strongest choice based on F1-score. At the specified 0.3 threshold, it achieves an F1-score of 0.5714 and recall of 0.7451.
 
-Under the common 0.3 probability threshold used in this comparison, the decision stump achieves an F1-score of 0.5532 and recall of 0.7647, while KNN achieves an F1-score of 0.4806 and recall of 0.6078. Hard voting produces an F1-score of 0.5481, and soft voting produces 0.5507. Neither voting method improves on logistic regression's F1-score, so combining these models does not provide a performance advantage in this experiment.
+### 2. Ensemble voting
+
+Five models were evaluated on the same test set using the specified 0.3 probability threshold where applicable. Logistic regression achieved the highest F1-score of 0.5714, with precision of 0.4634 and recall of 0.7451.
+
+The decision stump achieved an F1-score of 0.5532 and recall of 0.7647. KNN, using the majority prediction rule for K=5, achieved an F1-score of 0.3696 and recall of 0.3333. Hard voting achieved an F1-score of 0.5344, while soft voting achieved 0.5507.
+
+Neither voting method outperformed logistic regression on F1-score. Therefore, combining these models did not provide a performance advantage in this experiment. The stump had slightly higher recall, but logistic regression provided the best balance according to F1-score.
+
 
 ### 3. AdaBoost
 
@@ -266,18 +276,20 @@ Including the biases, the RNN contains 26,768 parameters. The same weights are r
 
 A very deep plain network can suffer from vanishing gradients, where gradients become progressively smaller as they pass backwards through many layers, preventing early layers from learning effectively. Skip connections provide shorter paths for information and gradients to travel, helping preserve gradient flow during training.
 
+
+
 ## Model-choice memo
 
 **To:** Head of the Lending Risk Team
 **Subject:** Structured-data model recommendation
 
-I recommend logistic regression as the structured-data model to take forward for controlled production validation. At the 0.3 threshold, it achieves an F1-score of 0.5714 and recall of 0.7451, outperforming hard voting (F1 0.5481) and soft voting (F1 0.5507). Its recall is also higher than KNN's 0.6078.
+I recommend logistic regression as the structured-data model to take forward for controlled production validation. At the 0.3 threshold, it achieves an F1-score of 0.5714 and recall of 0.7451. This exceeds hard voting (F1 0.5344), soft voting (F1 0.5507), and KNN (F1 0.3696). The decision stump has slightly higher recall of 0.7647, but a lower F1-score of 0.5532.
 
 For the cost-based operating threshold, I recommend 0.15, selected using training data. On the test set, logistic regression at this threshold incurs a cost of INR 6,050, compared with INR 11,800 at the standard 0.5 threshold and INR 20,400 when no borrowers are flagged. These costs use INR 50 per false positive and INR 400 per false negative.
 
 The evidence has limitations: it comes from 800 synthetic records and one stratified train-test split, so it does not establish real-world lending performance. The threshold and model should be validated on representative, real-world data before deployment.
 
-Model B, the payment-remark classification RNN, is worth a limited pilot before production because payment remarks may provide additional lending-risk context; its incremental value must be tested rather than assumed.
+Model B, the payment-remark classification RNN, is worth a limited pilot before production because payment remarks may provide additional lending-risk context. Its incremental value must be tested rather than assumed.
 
 ## Limitations
 
